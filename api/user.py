@@ -63,12 +63,25 @@ class UserAPI:
             return jsonify(json_ready)  # jsonify creates Flask response object, more specific to APIs than json.dumps
         
         @token_required
-        def delete(self, current_user):
-            body = request.get_json()
-            uid = body.get('uid')
+        def put(self, current_user):
+            body = request.get_json() # get the body of the request
+            uid = body.get('uid') # get the UID (Know what to reference)
+            name = body.get('name')
+            password = body.get('password')
             users = User.query.all()
             for user in users:
                 if user.uid == uid:
+                    user.update(name,'',password)
+            return f"{user.read()} Updated"
+        
+        @token_required
+        def delete(self, current_user):
+        # body = request.get_json()
+            token = request.cookies.get("jwt")
+            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid']
+            users = User.query.all()
+            for user in users:
+                if user.uid==cur_user: # modified with the and user.id==cur_user so random users can't delete other ppl
                     user.delete()
             return jsonify(user.read())
         
@@ -103,7 +116,7 @@ class UserAPI:
                         resp.set_cookie("jwt", token,
                                 max_age=3600,
                                 secure=True,
-                                httponly=True,
+                                httponly=False,
                                 path='/',
                                 samesite='None'  # This is the key part for cross-site requests
 
