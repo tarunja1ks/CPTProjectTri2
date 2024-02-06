@@ -55,7 +55,22 @@ class Design(db.Model):
             "Content": self.content,
             "Type": self.type,
         }
-
+    
+    def update(self, name="", content="", type=""):
+        """only updates values with length"""
+        if len(name) > 0:
+            self.name = name
+        if len(content) > 0:
+            self.content = content
+        if len(type) > 0:
+            self.type = type
+        db.session.commit()
+        return self
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+        return None
 
 # Define the User class to manage actions in the 'users' table
 # -- Object Relational Mapping (ORM) is the key concept of SQLAlchemy
@@ -157,6 +172,7 @@ class User(db.Model):
             "type": self.type,
             "designs": [design.read() for design in self.designs]
         }
+    
 
     # CRUD update: updates user name, password, phone
     # returns self
@@ -198,7 +214,6 @@ def initUsers():
         for user in users:
             try:
                 '''add a few 1 to 4 notes per user'''
-                user.designs.append(Design(id=user.id, type="private", content="html", name="Design Name"))
                 '''add user/post data to table'''
                 user.create()
             except IntegrityError:
