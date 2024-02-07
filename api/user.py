@@ -87,6 +87,15 @@ class UserAPI:
                 if user.uid==cur_user: # modified with the and user.id==cur_user so random users can't delete other ppl
                     user.delete()
             return jsonify(user.read())
+        
+        @token_required
+        def head(self, current_user):
+            token = request.cookies.get("jwt")
+            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid']
+            users = User.query.all()
+            for user in users:
+                if user.uid==cur_user:
+                    return user.read()
     
     class _DesignCRUD(Resource):  # Design CRUD
         @token_required
@@ -98,7 +107,6 @@ class UserAPI:
             for user in users:
                 if user.uid==cur_user: # modified with the and user.id==cur_user so random users can't delete other ppl
                     id = user.id
-                    owner = user
             body = request.get_json()
             name = body.get('name')
             content = body.get('content')
@@ -110,6 +118,27 @@ class UserAPI:
             # success returns json of user
             if design:
                 return jsonify(user.read())
+        
+        @token_required
+        def get(self, current_user):
+            body = request.get_json() # get the body of the request
+            token = request.cookies.get("jwt")
+            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid']
+            users = User.query.all()
+            for user in users:
+                if user.uid==cur_user: # modified with the and user.id==cur_user so random users can't delete other ppl
+                    id = user.id
+            like = body.get('like')
+            dislike = body.get('dislike')
+            name = body.get('name')
+            if (like != "add") and (dislike != "add") and (like != "remove") and (dislike != "remove"):
+                return f"Like/Dislike must be add or remove", 400
+            designs = Design.query.all()
+            for design in designs:
+                if design.userID == id and design.name == name:
+                    design.update('','','', (1 if like == "add" else (-1 if like == "remove" else 0)), (1 if dislike == "add" else (-1 if dislike == "remove" else 0)))
+                    return f"{design.read()} Updated"
+            return f"Cannot locate design", 400
         
         @token_required
         def put(self, current_user):
@@ -146,10 +175,6 @@ class UserAPI:
                     design.delete()
                     return f"{design.read()} Deleted"
             return f"Cannot locate design", 400
-
-            
-            
-
         
     class _Security(Resource):
         def post(self):
