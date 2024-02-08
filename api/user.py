@@ -207,7 +207,33 @@ class UserAPI:
             for design in designs: # we going through every design
                 design_return.append(design.__repr__())
             return jsonify({"Designs":design_return}) # returning all the designs of the user
-    
+    class _Search(Resource):
+        def post(self):
+            body = request.get_json()
+            design_name=body.get('design_name')
+            users=User.query.all()
+            design_return=[]# all designs stored in the database
+            for user in users:
+                designs=user.read()["designs"] # this is all the designs for the user
+                for design in designs: # we going through every design
+                    print(design,designs)
+                    if(design['Type']=='public'):
+                        design_return.append(design.__repr__())
+            return jsonify({"Designs":design_return}) # returning designs of all users that are public
+                   
+            
+        
+        # get all private designs
+        @token_required
+        def get(self, current_user):
+            token = request.cookies.get("jwt")
+            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid'] # current user
+            user=cur_user
+            designs=user.read()["designs"] # this is all the designs for the user
+            design_return=[]# all designs stored in the database for the user
+            for design in designs: # we going through every design
+                design_return.append(design.__repr__())
+            return jsonify({"Designs":design_return}) # returning all the designs of the user
     class _Security(Resource):
         def post(self):
             try:
@@ -267,5 +293,6 @@ class UserAPI:
     # building RESTapi endpoint
     api.add_resource(_CRUD, '/')
     api.add_resource(_DesignCRUD, '/design')
+    api.add_resource(_Search, '/search')
     api.add_resource(_Security, '/authenticate')
     
