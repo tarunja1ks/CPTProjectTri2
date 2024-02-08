@@ -110,10 +110,11 @@ class UserAPI:
             body = request.get_json()
             name = body.get('name')
             content = body.get('content')
+            image64=body.get('image')
             type = body.get('type')
             if (type != "public" and type != "private"):
                 return {'message': f'Design type must be public or private'}, 400
-            do = Design(id=id, type=type, content=content, name=name)
+            do = Design(id=id, type=type, content=content, name=name,images=image64)
             design = do.create()
             # success returns json of user
             if design:
@@ -176,6 +177,33 @@ class UserAPI:
                     return f"{design.read()} Deleted"
             return f"Cannot locate design", 400
         
+        # public search of all designs
+        def public_search(self):
+            body = request.get_json()
+            design_name=body.get('design_name')
+            users=User.query.all()
+            design_return=[]# all designs stored in the database
+            for user in users:
+                designs=user.read()["designs"] # this is all the designs for the user
+                for design in designs: # we going through every design
+                    if(design.read()['Type']=='public'):
+                        design_return.append(design.__repr__())
+            return jsonify({"Designs":design_return}) # returning designs of all users that are public
+                   
+            
+        
+        # get all private designs
+        @token_required
+        def private_search(self, current_user):
+            token = request.cookies.get("jwt")
+            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid'] # current user
+            user=cur_user
+            designs=user.read()["designs"] # this is all the designs for the user
+            design_return=[]# all designs stored in the database for the user
+            for design in designs: # we going through every design
+                design_return.append(design.__repr__())
+            return jsonify({"Designs":design_return}) # returning all the designs of the user
+    
     class _Security(Resource):
         def post(self):
             try:

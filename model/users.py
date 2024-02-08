@@ -22,15 +22,16 @@ class Design(db.Model):
     userID = db.Column(db.Integer, db.ForeignKey('users.id'))
     likes = db.Column(db.Integer, unique=False, nullable=False)
     dislikes = db.Column(db.Integer, unique=False, nullable=False)
-
+    images = db.Column(db.String, unique=False)
     # Constructor of a Notes object, initializes of instance variables within object
-    def __init__(self, id, type, content, name, likes=0, dislikes=0):
+    def __init__(self, id, type, content, name,images, likes=0, dislikes=0):
         self.userID = id
         self.type = type
         self.content = content
         self.name = name
         self.likes = likes
         self.dislikes = dislikes
+        self.images=images
 
     # Returns a string representation of the Notes object, similar to java toString()
     # returns string
