@@ -89,13 +89,20 @@ class UserAPI:
             return jsonify(user.read())
         
         @token_required
-        def head(self, current_user):
+        def patch(self, current_user):
             token = request.cookies.get("jwt")
             cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid']
             users = User.query.all()
             for user in users:
                 if user.uid==cur_user:
-                    return user.read()
+                    thing = {
+                        "id": user.id,
+                        "name": user.name,
+                        "uid": user.uid,
+                        "type": user.type,
+                    }
+                    return jsonify(thing)
+                    
     
     class _DesignCRUD(Resource):  # Design CRUD
         @token_required
