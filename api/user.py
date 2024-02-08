@@ -107,6 +107,7 @@ class UserAPI:
             for user in users:
                 if user.uid==cur_user: # modified with the and user.id==cur_user so random users can't delete other ppl
                     id = user.id
+            print("here")
             body = request.get_json()
             name = body.get('name')
             content = body.get('content')
@@ -114,7 +115,10 @@ class UserAPI:
             type = body.get('type')
             if (type != "public" and type != "private"):
                 return {'message': f'Design type must be public or private'}, 400
-            do = Design(id=id, type=type, content=content, name=name,images=image64)
+            print("here1")
+            do = Design(id=id, type=type, content=content, name=name,images="nrij")
+            print("here2")
+            print(image64,"thing")
             design = do.create()
             # success returns json of user
             if design:
