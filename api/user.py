@@ -188,32 +188,48 @@ class UserAPI:
                     return f"{design.read()} Deleted"
             return f"Cannot locate design", 400
         
-        # public search of all designs
-        def public_search(self):
-            body = request.get_json()
-            design_name=body.get('design_name')
-            users=User.query.all()
-            design_return=[]# all designs stored in the database
+        @token_required
+        def patch(self, current_user):
+            body = request.get_json() # get the body of the request
+            name = body.get('name')
+            token = request.cookies.get("jwt")
+            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid']
+            users = User.query.all()
             for user in users:
-                designs=user.read()["designs"] # this is all the designs for the user
-                for design in designs: # we going through every design
-                    if(design.read()['Type']=='public'):
-                        design_return.append(design.__repr__())
+                if user.uid==cur_user: # modified with the and user.id==cur_user so random users can't delete other ppl
+                    id = user.id
+            designs = Design.query.all()
+            for design in designs:
+                if design.userID == id and design.name == name:
+                    return jsonify(design.read())
+            return f"Cannot locate design", 400
+
+    class _SearchCRUD(Resource):
+        # public search of all designs
+        def get(self):
+            design_return=[]# all designs stored in the database
+            designs = Design.query.all()
+            for design in designs: # we going through every design
+                if(design.read()['Type']=='public'):
+                    design_return.append(design.__repr__())
             return jsonify({"Designs":design_return}) # returning designs of all users that are public
-                   
-            
         
         # get all private designs
         @token_required
-        def private_search(self, current_user):
+        def put(self, current_user):
             token = request.cookies.get("jwt")
             cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid'] # current user
-            user=cur_user
-            designs=user.read()["designs"] # this is all the designs for the user
+            users = User.query.all()
+            for user in users:
+                if user.uid==cur_user: 
+                    id = user.id
+            designs=Design.query.all() # this is all the designs for the user
             design_return=[]# all designs stored in the database for the user
             for design in designs: # we going through every design
-                design_return.append(design.__repr__())
+                if design.userID == id:
+                    design_return.append(design.__repr__())
             return jsonify({"Designs":design_return}) # returning all the designs of the user
+
     class _Search(Resource):
         def post(self):
             body = request.get_json()
@@ -300,6 +316,6 @@ class UserAPI:
     # building RESTapi endpoint
     api.add_resource(_CRUD, '/')
     api.add_resource(_DesignCRUD, '/design')
-    api.add_resource(_Search, '/search')
+    api.add_resource(_SearchCRUD, '/search')
     api.add_resource(_Security, '/authenticate')
     
