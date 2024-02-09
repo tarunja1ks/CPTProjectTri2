@@ -228,44 +228,7 @@ class UserAPI:
             for design in designs: # we going through every design
                 if design.userID == id:
                     design_return.append(design.__repr__())
-            return jsonify({"Designs":design_return}) # returning all the designs of the user
-
-    class _Search(Resource):
-        def post(self):
-            body = request.get_json()
-            users=User.query.all()
-            design_return=[]# all designs stored in the database
-            for user in users:
-                designs=user.read()["designs"] # this is all the designs for the user
-                for design in designs: # we going through every design
-                    # print(design,designs)
-                    if(design['Type']=='public'):
-                        design_return.append(design.__repr__())
-            return jsonify({"Designs":design_return}) # returning designs of all users that are public
-                   
-            
-        
-        # get all private designs
-        @token_required
-        def get(self, current_user):
-            token = request.cookies.get("jwt")
-            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid'] # current user
-            design_return=[]# all designs stored in the database for the user
-            
-            
-            users=User.query.all()# getting all users
-            design_return=[]# all designs stored in the database
-            for user in users:
-                if(user.read()["uid"]== cur_user):
-                    designs=user.read()["designs"] # this is all the designs for the user
-                    for design in designs: # we going through every design
-                                design_return.append(design.__repr__())
-                    for design in designs: # we going through every design
-                        design_return.append(design.__repr__())
-                continue
-            return jsonify({"Designs":design_return}) # returning all the designs of the user
-        
-        
+            return jsonify({"Designs":design_return}) # returning all the designs of the user        
         
     class _Security(Resource):
         def post(self):
