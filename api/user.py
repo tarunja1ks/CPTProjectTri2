@@ -118,12 +118,13 @@ class UserAPI:
             body = request.get_json()
             name = body.get('name')
             content = body.get('content')
+            description = body.get('description')
             image64=body.get('image')
             type = body.get('type')
             if (type != "public" and type != "private"):
                 return {'message': f'Design type must be public or private'}, 400
             print("here1")
-            do = Design(id=id, type=type, content=content, name=name,images="nrij")
+            do = Design(id=id, type=type, content=content, name=name,images="nrij",description=description)
             print("here2")
             print(image64,"thing")
             design = do.create()
@@ -164,10 +165,11 @@ class UserAPI:
             name = body.get('name')
             content = body.get('content')
             type = body.get('type')
+            description = body.get('description')
             designs = Design.query.all()
             for design in designs:
                 if design.userID == id and design.name == name:
-                    design.update('',content,type)
+                    design.update('',content,type,0,0,description)
                     return f"{design.read()} Updated"
             return f"Cannot locate design", 400
         
