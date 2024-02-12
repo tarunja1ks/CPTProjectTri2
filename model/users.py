@@ -22,16 +22,16 @@ class Design(db.Model):
     userID = db.Column(db.Integer, db.ForeignKey('users.id'))
     likes = db.Column(db.Integer, unique=False, nullable=False)
     dislikes = db.Column(db.Integer, unique=False, nullable=False)
-    images = db.Column(db.String, unique=False)
+    
     # Constructor of a Notes object, initializes of instance variables within object
-    def __init__(self, id, type, content, name,images, likes=0, dislikes=0):
+    def __init__(self, id, type, content, name, likes=0, dislikes=0):
         self.userID = id
         self.type = type
         self.content = content
         self.name = name
         self.likes = likes
         self.dislikes = dislikes
-        self.images=images
+       
 
     # Returns a string representation of the Notes object, similar to java toString()
     # returns string
@@ -98,16 +98,17 @@ class User(db.Model):
     _password = db.Column(db.String(255), unique=False, nullable=False)
     _type = db.Column(db.String(255), unique=False, nullable=False)
     _dob = db.Column(db.Date)
-    
+    images = db.Column(db.String, unique=False)
     # Defines a relationship between User record and Notes table, one-to-many (one user to many notes)
     designs = db.relationship("Design", cascade='all, delete', backref='users', lazy=True)
 
     # constructor of a User object, initializes the instance variables within object (self)
-    def __init__(self, name, uid, password="123qwerty", type="standard"):
+    def __init__(self, name, uid,images, password="123qwerty", type="standard" ):
         self._name = name    # variables with self prefix become part of the object, 
         self._uid = uid
         self.set_password(password)
         self._type = type
+        self.images=images
 
     # a name getter method, extracts name from object
     @property
@@ -195,6 +196,12 @@ class User(db.Model):
             self.uid = uid
         if len(password) > 0:
             self.set_password(password)
+        
+        db.session.commit()
+        return self
+    def updatepfp(self,image64=""):
+        if(len(image64)>0):
+            self.images=image64
         db.session.commit()
         return self
 
@@ -215,10 +222,10 @@ def initUsers():
         """Create database and tables"""
         db.create_all()
         """Tester data for table"""
-        u1 = User(name='Thomas Edison', uid='toby', password='123toby', type="admin")
-        u2 = User(name='Nicholas Tesla', uid='niko', password='123niko', type="standard")
-        u3 = User(name='Alexander Graham Bell', uid='lex', type="standard")
-        u4 = User(name='Grace Hopper', uid='hop', password='123hop', type="standard")
+        u1 = User(name='Thomas Edison', uid='toby', password='123toby', type="admin",images="thing")
+        u2 = User(name='Nicholas Tesla', uid='niko', password='123niko', type="standard",images="thing")
+        u3 = User(name='Alexander Graham Bell', uid='lex', type="standard",images="thing")
+        u4 = User(name='Grace Hopper', uid='hop', password='123hop', type="standard",images="thing")
         users = [u1, u2, u3, u4]
 
         """Builds sample user/note(s) data"""
