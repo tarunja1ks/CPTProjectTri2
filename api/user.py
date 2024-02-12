@@ -74,6 +74,12 @@ class UserAPI:
             users = User.query.all()
             for user in users:
                 if user.uid == cur_user:
+                    if uid == None:
+                        uid = user.uid
+                    if name == None:
+                        name = user.name
+                    if password == None:
+                        password = user.password
                     user.update(name,uid,password)
             return f"{user.read()} Updated"
         
