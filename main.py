@@ -68,3 +68,7 @@ app.cli.add_command(custom_cli)
 if __name__ == "__main__":
     # change name for testing
     app.run(debug=True, host="0.0.0.0", port="8086")
+# server always runs on the address http://127.0.0.1:8086/
+# http://127.0.0.1:8086/api/users/search
+# http://127.0.0.1:8086/api/users/design
+# http://127.0.0.1:8086/api/users/authenticate
