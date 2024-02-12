@@ -22,21 +22,19 @@ class Design(db.Model):
     userID = db.Column(db.Integer, db.ForeignKey('users.id'))
     likes = db.Column(db.Integer, unique=False, nullable=False)
     dislikes = db.Column(db.Integer, unique=False, nullable=False)
-    
-    # Constructor of a Notes object, initializes of instance variables within object
-    def __init__(self, id, type, content, name, likes=0, dislikes=0):
+    def __init__(self, id, type, content, name, likes=0, dislikes=0, description=""):
         self.userID = id
         self.type = type
         self.content = content
         self.name = name
         self.likes = likes
         self.dislikes = dislikes
-       
+        self.description = description
 
     # Returns a string representation of the Notes object, similar to java toString()
     # returns string
     def __repr__(self):
-        return {"Name": self.name, "Content": self.content, "Type": self.type, "Owner": self.userID, "Likes": self.likes, "Dislikes": self.dislikes}
+        return {"Name": self.name, "Content": self.content, "Type": self.type, "Owner": self.userID, "Likes": self.likes, "Dislikes": self.dislikes, "Description": self.description,}
 
     # CRUD create, adds a new record to the Notes table
     # returns the object added or None in case of an error
@@ -60,10 +58,11 @@ class Design(db.Model):
             "Content": self.content,
             "Type": self.type,
             "Likes": self.likes,
-            "Dislikes": self.dislikes
+            "Dislikes": self.dislikes,
+            "Description": self.description,
         }
     
-    def update(self, name="", content="", type="", likes=0, dislikes=0):
+    def update(self, name="", content="", type="", likes=0, dislikes=0, description=''):
         """only updates values with length"""
         if len(name) > 0:
             self.name = name
@@ -75,6 +74,8 @@ class Design(db.Model):
             self.likes += likes
         if dislikes != 0:
             self.dislikes += dislikes
+        if len(description) != 0:
+            self.description = description
         db.session.commit()
         return self
     

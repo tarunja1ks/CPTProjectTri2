@@ -74,6 +74,12 @@ class UserAPI:
             users = User.query.all()
             for user in users:
                 if user.uid == cur_user:
+                    if uid == None:
+                        uid = user.uid
+                    if name == None:
+                        name = user.name
+                    if password == None:
+                        password = user.password
                     user.update(name,uid,password)
             
                 
@@ -107,29 +113,7 @@ class UserAPI:
                     
     
     class _DesignCRUD(Resource):  # Design CRUD
-        @token_required
-        def post(self, current_user): # Create THE IMAGE PROPFILE PCITURE
-            ''' Read data for json body '''
-            token = request.cookies.get("jwt")
-            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid']
-            users = User.query.all()
-            for user in users:
-                if user.uid==cur_user: # modified with the and user.id==cur_user so random users can't delete other ppl
-                    id = user.id
-            body = request.get_json()
-            name = body.get('name')
-            content = body.get('content')
-            image64=body.get('image')
-            type = body.get('type')
-            if (type != "public" and type != "private"):
-                return {'message': f'Design type must be public or private'}, 400
-            pfp = user(id=id, type=type, content=content, name=name,images=image64)
-            print(image64,"thing")
-            profilepic= pfp.create()
-            
-            # success returns json of user
-            if profilepic:
-                return jsonify(profilepic.__repr__())
+      
         
         @token_required
         def get(self, current_user):
@@ -164,10 +148,11 @@ class UserAPI:
             name = body.get('name')
             content = body.get('content')
             type = body.get('type')
+            description = body.get('description')
             designs = Design.query.all()
             for design in designs:
                 if design.userID == id and design.name == name:
-                    design.update('',content,type)
+                    design.update('',content,type,0,0,description)
                     return f"{design.read()} Updated"
             return f"Cannot locate design", 400
         
