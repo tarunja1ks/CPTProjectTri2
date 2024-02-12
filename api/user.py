@@ -290,4 +290,3 @@ class UserAPI:
     api.add_resource(Images,'/images')
     api.add_resource(_Security, '/authenticate')
     
-    
