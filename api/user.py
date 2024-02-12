@@ -81,6 +81,8 @@ class UserAPI:
                     if password == None:
                         password = user.password
                     user.update(name,uid,password)
+            
+                
             return f"{user.read()} Updated"
         
         @token_required
@@ -111,32 +113,7 @@ class UserAPI:
                     
     
     class _DesignCRUD(Resource):  # Design CRUD
-        @token_required
-        def post(self, current_user): # Create design
-            ''' Read data for json body '''
-            token = request.cookies.get("jwt")
-            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid']
-            users = User.query.all()
-            for user in users:
-                if user.uid==cur_user: # modified with the and user.id==cur_user so random users can't delete other ppl
-                    id = user.id
-            print("here")
-            body = request.get_json()
-            name = body.get('name')
-            content = body.get('content')
-            description = body.get('description')
-            image64=body.get('image')
-            type = body.get('type')
-            if (type != "public" and type != "private"):
-                return {'message': f'Design type must be public or private'}, 400
-            print("here1")
-            do = Design(id=id, type=type, content=content, name=name,images="nrij",description=description)
-            print("here2")
-            print(image64,"thing")
-            design = do.create()
-            # success returns json of user
-            if design:
-                return jsonify(user.read())
+      
         
         @token_required
         def get(self, current_user):
@@ -237,7 +214,19 @@ class UserAPI:
                 if design.userID == id:
                     design_return.append(design.__repr__())
             return jsonify({"Designs":design_return}) # returning all the designs of the user        
-        
+    class Images(Resource):
+        @token_required
+        def post(self,current_user):
+            token = request.cookies.get("jwt")
+            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid'] # current user
+            body=request.get_json()
+            base64=body.get("Image")
+            users = User.query.all()
+            for user in users:
+                if user.uid == cur_user:
+                    user.updatepfp(base64)
+            print("succesful")
+            
     class _Security(Resource):
         def post(self):
             try:
@@ -298,5 +287,7 @@ class UserAPI:
     api.add_resource(_CRUD, '/')
     api.add_resource(_DesignCRUD, '/design')
     api.add_resource(_SearchCRUD, '/search')
+    api.add_resource(Images,'/images')
     api.add_resource(_Security, '/authenticate')
+    
     
