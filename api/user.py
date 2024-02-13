@@ -113,7 +113,28 @@ class UserAPI:
                     
     
     class _DesignCRUD(Resource):  # Design CRUD
-      
+        @token_required
+        def post(self, current_user): # Create design
+            ''' Read data for json body '''
+            token = request.cookies.get("jwt")
+            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid']
+            users = User.query.all()
+            for user in users:
+                if user.uid==cur_user: # modified with the and user.id==cur_user so random users can't delete other ppl
+                    id = user.id
+            print("here")
+            body = request.get_json()
+            name = body.get('name')
+            content = body.get('content')
+            description = body.get('description')
+            type = body.get('type')
+            if (type != "public" and type != "private"):
+                return {'message': f'Design type must be public or private'}, 400
+            do = Design(id=id, type=type, content=content, name=name,description=description)
+            design = do.create()
+            # success returns json of user
+            if design:
+                return jsonify(user.read())
         
         @token_required
         def get(self, current_user):

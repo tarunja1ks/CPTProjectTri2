@@ -22,6 +22,7 @@ class Design(db.Model):
     userID = db.Column(db.Integer, db.ForeignKey('users.id'))
     likes = db.Column(db.Integer, unique=False, nullable=False)
     dislikes = db.Column(db.Integer, unique=False, nullable=False)
+    description = db.Column(db.String, unique=False, nullable=False)
     def __init__(self, id, type, content, name, likes=0, dislikes=0, description=""):
         self.userID = id
         self.type = type
