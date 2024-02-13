@@ -205,6 +205,9 @@ class User(db.Model):
             self.images=image64
         db.session.commit()
         return self
+    
+    def getprofile(self):
+        return self.images
 
     # CRUD delete: remove self
     # None

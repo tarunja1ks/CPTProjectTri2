@@ -33,7 +33,7 @@ class UserAPI:
 
             ''' #1: Key code block, setup USER OBJECT '''
             uo = User(name=name, 
-                      uid=uid)
+                      uid=uid,images="Thing")
             
             ''' Additional garbage error checking '''
             # set password if provided
@@ -226,7 +226,17 @@ class UserAPI:
                 if user.uid == cur_user:
                     user.updatepfp(base64)
             print("succesful")
-            
+        @token_required
+        def get(self,current_user):
+            print("here")
+            token = request.cookies.get("jwt")
+            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid'] # current user
+            users = User.query.all()
+            for user in users:
+                if user.uid == cur_user:
+                    # print(type(user))
+                    # print(jsonify(user.getProfile()))
+                    return jsonify(user.getprofile())
     class _Security(Resource):
         def post(self):
             try:
