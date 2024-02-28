@@ -137,7 +137,7 @@ class UserAPI:
                 return jsonify(user.read())
         
         @token_required
-        def get(self, current_user):
+        def delete(self, current_user):
             body = request.get_json() # get the body of the request
             token = request.cookies.get("jwt")
             cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid']
@@ -175,23 +175,6 @@ class UserAPI:
                 if design.userID == id and design.name == name:
                     design.update('',content,type,0,0,description)
                     return f"{design.read()} Updated"
-            return f"Cannot locate design", 400
-        
-        @token_required
-        def delete(self, current_user):
-            body = request.get_json() # get the body of the request
-            token = request.cookies.get("jwt")
-            cur_user = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])['_uid']
-            users = User.query.all()
-            for user in users:
-                if user.uid==cur_user: # modified with the and user.id==cur_user so random users can't delete other ppl
-                    id = user.id
-            name = body.get('name')
-            designs = Design.query.all()
-            for design in designs:
-                if design.userID == id and design.name == name:
-                    design.delete()
-                    return f"{design.read()} Deleted"
             return f"Cannot locate design", 400
         
         @token_required
