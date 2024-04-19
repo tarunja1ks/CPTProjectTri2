@@ -82,7 +82,6 @@ class UserAPI:
                         password = user.password
                     user.update(name,uid,password)
             
-                
             return f"{user.read()} Updated"
         
         @token_required
