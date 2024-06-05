@@ -56,20 +56,6 @@ pip install -r requirements.txt
   - Select main.py and Play button
   - Try Play button and try to Debug
 
-## Idea
-
-> The purpose of project is to serve APIs.  It is the backend piece of a Full-Stack project.  Review `api` folder in project for endpoints.
-
-### Visual thoughts
-
-> The Starter code should be fun and practical.
-
-- Organize with Bootstrap menu
-- Add some color and fun through VANTA Visuals (birds, halo, solar, net)
-- Show some practical and fun links (hrefs) like Twitter, Git, Youtube
-- Build a Sample Page (Table)
-- Show project specific links (hrefs) per page
-
 ### Files and Directories in this Project
 
 These are some of the key files and directories in this project
@@ -102,11 +88,15 @@ Design Class
 - Represents a design entity in the database.
 - Attributes include name, type, content, userID, likes, dislikes, and description.
 - Methods include create, read, update, and delete for CRUD operations.
+
 User Class
 - Represents a user entity in the database.
 - Attributes include id, _name, _uid, _password, _type, _dob, and images.
 - Methods include create, read, update, delete, and helper methods for password management.
 - Includes relationships with the Design class for managing user designs.
+
 Database Initialization
 - Provides a function initUsers() to create test users and designs in the database.
 - Uses SQLAlchemy's session management for committing changes and handling errors.
+
+# Remember to run ./migrate-sh to initialize database before running Flask backend with python main.py
