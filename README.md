@@ -1,4 +1,4 @@
-# Flask Portfolio Starter
+# Conventional Flask Portfolio Starter
 
 Use this project to create a Flask Servr.
 
@@ -94,31 +94,19 @@ templates: This directory contains files and subdirectories used to support the 
 
 .gitignore: This file specifies elements to be excluded from version control. Files are excluded when they are derived and not considered part of the project’s original source. In the VSCode Explorer, you may notice some files appearing dimmed, indicating that they are intentionally excluded from version control based on the rules defined in .gitignore.
 
-### Implementation Summary
+model/users.py:
 
-#### July 2023
+This Python module defines SQLAlchemy models for managing users and their designs within a SQLite database. It includes classes for User and Design, each with methods for CRUD operations.
 
-> Updates for 2023 to 2024 school year.
-
-- Update README with File Descriptions (anatomy)
-- Add JWT and add security features to data
-- Add migrate.sh to support sqlite schema and data upgrade
-
-#### January 2023
-
-> This project focuses on being a Python backend server.  Intentions are to only have simple UIs an perhaps some Administrative UIs.
-
-#### September 2021
-
-> Basic UI elements were implemented showing server side Flask with Jinja 2 capabilities.
-
-- Project entry point is main.py, this enables Flask Web App and provides capability to renders templates (HTML files)
-- The main.py is the  Web Server Gateway Interface, essentially it contains a HTTP route and HTML file relationship.  The Python code constructs WSGI relationships for index, kangaroos, walruses, and hawkers.
-- The project structure contains many directories and files.  The template directory (containing html files) and static directory (containing js files) are common standards for HTML coding.  Static files can be pictures and videos, in this project they are mostly javascript backgrounds.
-- WSGI templates: index.html, kangaroos.html, ... are aligned with routes in main.py.
-- Other templates support WSGI templates.  The base.html template contains common Head, Style, Body, Script definitions.  WSGI templates often "include" or "extend" these templates.  This is a way to reuse code.
-- The VANTA javascript statics (backgrounds) are shown and defaulted in base.html (birds), but are block replaced as needed in other templates (solar, net, ...)
-- The Bootstrap Navbar code is in navbar.html. The base.html code includes navbar.html.  The WSGI html files extend base.html files.  This is a process of management and correlation to optimize code management.  For instance, if the menu changes discovery of navbar.html is easy, one change reflects on all WSGI html files.
-- Jinja2 variables usage is to isolate data and allow redefinitions of attributes in templates.  Observe "{% set variable = %}" syntax for definition and "{{ variable }}" for reference.
-- The base.html uses combination of Bootstrap grid styling and custom CSS styling.  Grid styling in observe with the "<Col-3>" markers.  A Bootstrap Grid has a width of 12, thus four "Col-3" markers could fit on a Grid row.
-- A key purpose of this project is to embed links to other content.  The "href=" definition embeds hyperlinks into the rendered HTML.  The base.html file shows usage of "href={{github}}", the "{{github}}" is a Jinja2 variable.  Jinja2 variables are pre-processed by Python, a variable swap with value, before being sent to the browser.
+Design Class
+- Represents a design entity in the database.
+- Attributes include name, type, content, userID, likes, dislikes, and description.
+- Methods include create, read, update, and delete for CRUD operations.
+User Class
+- Represents a user entity in the database.
+- Attributes include id, _name, _uid, _password, _type, _dob, and images.
+- Methods include create, read, update, delete, and helper methods for password management.
+- Includes relationships with the Design class for managing user designs.
+Database Initialization
+- Provides a function initUsers() to create test users and designs in the database.
+- Uses SQLAlchemy's session management for committing changes and handling errors.
